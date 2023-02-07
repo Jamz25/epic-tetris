@@ -5,7 +5,7 @@
 
 bool can_move_piece_down(sf::Vector2i pos, std::array<std::array<PieceType, 10>, 20> const& fallen_pieces, PieceType type, int rotation) {
     PieceBlocks blocks = get_blocks(type, rotation);
-    for (sf::Vector2i block_pos : blocks.blocks) {
+    for (sf::Vector2i block_pos : blocks) {
         int y_index = static_cast<int>((pos.y + block_pos.y * 25 - 50) / 25);
         int x_index = static_cast<int>((pos.x + block_pos.x * 25 - 275) / 25);
         if (y_index >= 19) {
@@ -20,7 +20,7 @@ bool can_move_piece_down(sf::Vector2i pos, std::array<std::array<PieceType, 10>,
 
 bool can_move_piece_side(sf::Vector2i pos, std::array<std::array<PieceType, 10>, 20> const& fallen_pieces, PieceType type, int rotation, int dir) {
     PieceBlocks blocks = get_blocks(type, rotation);
-    for (sf::Vector2i block_pos : blocks.blocks) {
+    for (sf::Vector2i block_pos : blocks) {
         int y_index = static_cast<int>((pos.y + block_pos.y * 25 - 50) / 25);
         int x_index = static_cast<int>((pos.x + block_pos.x * 25 - 275) / 25);
         if (x_index + dir < 0 || x_index + dir > 9) {
@@ -36,7 +36,7 @@ bool can_move_piece_side(sf::Vector2i pos, std::array<std::array<PieceType, 10>,
 void attempt_rotate(sf::Vector2i& pos, std::array<std::array<PieceType, 10>, 20> const& fallen_pieces, PieceType type, int& rotation) {
     PieceBlocks blocks = get_blocks(type, rotation + 1);
     int x_push = 0;
-    for (sf::Vector2i block_pos : blocks.blocks) {
+    for (sf::Vector2i block_pos : blocks) {
         int y_index = static_cast<int>((pos.y + block_pos.y * 25 - 50) / 25);
         int x_index = static_cast<int>((pos.x + block_pos.x * 25 - 275) / 25);
         if (x_index < 0) {
@@ -141,12 +141,12 @@ int main() {
                 if (event.key.code == sf::Keyboard::W) {
                     sf::Vector2i calculated_drop = calculate_drop_position(piece_position, fallen_pieces, piece_type, rotation);
                     PieceBlocks blocks = get_blocks(piece_type, rotation);
-                    for (sf::Vector2i block_pos : blocks.blocks) {
+                    for (sf::Vector2i block_pos : blocks) {
                         int y_index = static_cast<int>((calculated_drop.y + block_pos.y * 25 - 50) / 25);
                         int x_index = static_cast<int>((calculated_drop.x + block_pos.x * 25 - 275) / 25);
                         fallen_pieces.at(y_index).at(x_index) = piece_type;
                     }
-                    piece_position = {425, 100};
+                    piece_position = {425, 150};
                     piece_type = get_random_type();
                     sweep_fallen_pieces(fallen_pieces);
                 }
@@ -167,12 +167,12 @@ int main() {
             }
             else {
                 PieceBlocks blocks = get_blocks(piece_type, rotation);
-                for (sf::Vector2i block_pos : blocks.blocks) {
+                for (sf::Vector2i block_pos : blocks) {
                     int y_index = static_cast<int>((piece_position.y + block_pos.y * 25 - 50) / 25);
                     int x_index = static_cast<int>((piece_position.x + block_pos.x * 25 - 275) / 25);
                     fallen_pieces.at(y_index).at(x_index) = piece_type;
                 }
-                piece_position = {425, 100};
+                piece_position = {425, 150};
                 piece_type = get_random_type();
                 sweep_fallen_pieces(fallen_pieces);
             }
