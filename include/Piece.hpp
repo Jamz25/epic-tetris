@@ -69,8 +69,8 @@ inline void draw_piece(sf::RenderWindow& window, PieceType type, int rotation, s
     PieceBlocks blocks = get_blocks(type, rotation);
     // Draw all rectangles
     for (sf::Vector2i offset : blocks) {
-        sf::RectangleShape rect({scale, scale});
-        rect.setPosition({position.x + offset.x * scale, position.y + offset.y * scale});
+        sf::RectangleShape rect(sf::Vector2f(scale, scale));
+        rect.setPosition(sf::Vector2f(position.x + offset.x * scale, position.y + offset.y * scale));
         rect.setFillColor(PieceColorMap.at(type));
         rect.setOutlineThickness(1);
         window.draw(rect);
@@ -82,10 +82,10 @@ inline void draw_calculated_drop(sf::RenderWindow& window, PieceType type, int r
     PieceBlocks blocks = get_blocks(type, rotation);
     // Draw all rectangles
     for (sf::Vector2i offset : blocks) {
-        sf::RectangleShape rect({scale, scale});
-        rect.setPosition({position.x + offset.x * scale, position.y + offset.y * scale});
-        rect.setFillColor({0, 0, 0});
-        rect.setOutlineColor({255, 255, 255});
+        sf::RectangleShape rect(sf::Vector2f(scale, scale));
+        rect.setPosition(sf::Vector2f(position.x + offset.x * scale, position.y + offset.y * scale));
+        rect.setFillColor(sf::Color(0, 0, 0));
+        rect.setOutlineColor(sf::Color(255, 255, 255));
         rect.setOutlineThickness(1);
         window.draw(rect);
     }
