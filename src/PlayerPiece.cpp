@@ -27,6 +27,8 @@ void PlayerPiece::update(float delta_time, PieceGrid& piece_grid) {
             piece_grid.add_fallen_piece(grid_pos_, piece_blocks_, piece_type_);
             piece_grid.sweep_fallen_pieces();
 
+            reset_();
+
         }
 
     }
@@ -48,7 +50,7 @@ void PlayerPiece::move_horizontal(PieceGrid const& piece_grid, PieceMove piece_m
 
 void PlayerPiece::rotate(PieceGrid const& piece_grid) {
 
-    PieceRotateAttempt rotate_attempt = piece_grid.attempt_rotate(grid_pos_, piece_blocks_);
+    PieceRotateAttempt rotate_attempt = piece_grid.attempt_rotate(grid_pos_, get_blocks(piece_type_, (rotation_ + 1) % 4));
     if (rotate_attempt.success) {
         rotation_++;
         piece_blocks_ = get_blocks(piece_type_, rotation_);

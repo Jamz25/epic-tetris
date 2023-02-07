@@ -17,10 +17,10 @@ bool PieceGrid::can_move_piece_down(sf::Vector2i grid_index, PieceBlocks piece_b
         int x_index = grid_index.x + block_pos.x;
         int y_index = grid_index.y + block_pos.y;
 
-        if (grid_index.y >= 19) {
+        if (y_index >= ROWS_ - 1) {
             return false;
         }
-        if (grid_.at(grid_index.y + 1).at(grid_index.x) != PieceType::None) {
+        if (grid_.at(y_index + 1).at(x_index) != PieceType::None) {
             return false;
         }
 
@@ -39,7 +39,7 @@ bool PieceGrid::can_move_piece_side(sf::Vector2i grid_index, PieceBlocks piece_b
         int x_index = grid_index.x + block_pos.x;
         int y_index = grid_index.y + block_pos.y;
 
-        if (x_index + dir < 0 || x_index + dir > 9) {
+        if (x_index + dir < 0 || x_index + dir > COLUMNS_ - 1) {
             return false;
         }
         if (grid_.at(y_index).at(x_index + dir) != PieceType::None) {
@@ -66,8 +66,8 @@ PieceRotateAttempt PieceGrid::attempt_rotate(sf::Vector2i grid_index, PieceBlock
             piece_rotate_attempt.x_push = std::max(piece_rotate_attempt.x_push, x_index * -1);
             continue;
         }
-        else if (x_index > 9) {
-            piece_rotate_attempt.x_push = std::min(piece_rotate_attempt.x_push, (x_index - 9) * -1);
+        else if (x_index > COLUMNS_ - 1) {
+            piece_rotate_attempt.x_push = std::min(piece_rotate_attempt.x_push, (x_index - COLUMNS_ - 1));
             continue;
         }
 

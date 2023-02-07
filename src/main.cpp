@@ -11,7 +11,7 @@ int main() {
 
     srand((unsigned)time(0));
 
-    sf::RenderWindow window(sf::VideoMode({800, 600}), "Game");
+    sf::RenderWindow window(sf::VideoMode({350, 600}), "Tetris");
     sf::Clock clock;
 
     PlayerPiece player_piece;
@@ -50,8 +50,6 @@ int main() {
         }
 
         player_piece.update(delta_time, piece_grid);
-
-        std::cout << player_piece.get_grid_pos().x << ", " << player_piece.get_grid_pos().y << "\n";
 
         window.clear();
         
