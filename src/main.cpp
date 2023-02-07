@@ -190,15 +190,20 @@ int main() {
         border.setPosition({275, 550});
         window.draw(border);
 
-        window.draw(grid);
+        //window.draw(grid);
 
         for (int y = 0; y < 20; y++) {
             for (int x = 0; x < 10; x++) {
+                sf::RectangleShape rect({25, 25});
+                rect.setOutlineThickness(1);
+                rect.setPosition({x * 25 + 275, y * 25 + 50});
                 if (fallen_pieces.at(y).at(x) != PieceType::None) {
-                    sf::RectangleShape rect({25, 25});
                     rect.setFillColor(PieceColorMap.at(fallen_pieces.at(y).at(x)));
-                    rect.setOutlineThickness(1);
-                    rect.setPosition({x * 25 + 275, y * 25 + 50});
+                    window.draw(rect);
+                }
+                else {
+                    rect.setOutlineColor({0, 0, 170});
+                    rect.setFillColor({0, 0, 0});
                     window.draw(rect);
                 }
             }

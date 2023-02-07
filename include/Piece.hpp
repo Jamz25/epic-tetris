@@ -28,8 +28,8 @@ const std::unordered_map<PieceType, PieceBlocks> unrotated_piece_map {
     {PieceType::Pronged, PieceBlocks{sf::Vector2i{0, 0}, sf::Vector2i{-1, 0}, sf::Vector2i{1, 0}, sf::Vector2i{0, 1}}},
     {PieceType::LLeft, PieceBlocks{sf::Vector2i{-1, -1}, sf::Vector2i{0, -1}, sf::Vector2i{0, 0}, sf::Vector2i{0, 1}}},
     {PieceType::LRight, PieceBlocks{sf::Vector2i{1, -1}, sf::Vector2i{0, -1}, sf::Vector2i{0, 0}, sf::Vector2i{0, 1}}},
-    {PieceType::ZLeft, PieceBlocks{sf::Vector2i{-1, 0}, sf::Vector2i{0, 0}, sf::Vector2i{0, -1}, sf::Vector2i{-1, -1}}},
-    {PieceType::ZRight, PieceBlocks{sf::Vector2i{1, 0}, sf::Vector2i{0, 0}, sf::Vector2i{0, -1}, sf::Vector2i{-1, -1}}}
+    {PieceType::ZLeft, PieceBlocks{sf::Vector2i{-1, 0}, sf::Vector2i{0, 0}, sf::Vector2i{0, 1}, sf::Vector2i{1, 1}}},
+    {PieceType::ZRight, PieceBlocks{sf::Vector2i{1, 0}, sf::Vector2i{0, 0}, sf::Vector2i{0, 1}, sf::Vector2i{-1, 1}}}
 };
 
 const std::unordered_map<PieceType, sf::Color> PieceColorMap {
@@ -43,14 +43,15 @@ const std::unordered_map<PieceType, sf::Color> PieceColorMap {
 };
 
 PieceType get_random_type() {
-    static const PieceType type_array[8] = {
+    static const PieceType type_array[7] = {
         PieceType::Square, PieceType::Line, PieceType::Pronged, PieceType::LLeft, PieceType::LRight, PieceType::ZLeft, PieceType::ZRight
         };
-    return type_array[rand() % 8];
+    PieceType type = type_array[rand() % 7];
+    std::cout << type << "\n";
+    return type;
 }
 
 PieceBlocks get_blocks(PieceType type, int rotation) {
-    std::cout << type << "\n";
     PieceBlocks rotated_blocks = unrotated_piece_map.at(type);
     if (type == PieceType::Square)
         return rotated_blocks;
