@@ -2,6 +2,7 @@
 #include <array>
 #include <iostream>
 #include "Piece.hpp"
+#include "PieceGrid.hpp"
 
 bool can_move_piece_down(sf::Vector2i pos, std::array<std::array<PieceType, 10>, 20> const& fallen_pieces, PieceType type, int rotation) {
     PieceBlocks blocks = get_blocks(type, rotation);
@@ -114,6 +115,8 @@ int main() {
         fallen_pieces.at(i).fill(PieceType::None);
     }
 
+    PieceGrid piece_grid;
+
     while (window.isOpen()) {
 
         float delta_time = clock.restart().asSeconds();
@@ -180,18 +183,9 @@ int main() {
 
         window.clear();
 
-        sf::RectangleShape border({100, 600});
-        border.setFillColor({0, 0, 90});
-        border.setPosition({175, 50});
-        window.draw(border);
-        border.setPosition({525, 50});
-        window.draw(border);
-        border.setSize({250, 100});
-        border.setPosition({275, 550});
-        window.draw(border);
-
         //window.draw(grid);
 
+        /*
         for (int y = 0; y < 20; y++) {
             for (int x = 0; x < 10; x++) {
                 sf::RectangleShape rect({25, 25});
@@ -208,6 +202,9 @@ int main() {
                 }
             }
         }
+        */
+
+       piece_grid.draw_grid(window);
 
         sf::Vector2i calculated_drop = calculate_drop_position(piece_position, fallen_pieces, piece_type, rotation);
         draw_calculated_drop(window, piece_type, rotation, calculated_drop, 25);
