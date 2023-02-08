@@ -17,6 +17,9 @@ int main() {
     PlayerPiece player_piece;
     PieceGrid piece_grid(sf::Vector2i(50, 50));
 
+    if (!piece_grid.load_textures())
+        return -1;
+
     while (window.isOpen()) {
 
         float delta_time = clock.restart().asSeconds();

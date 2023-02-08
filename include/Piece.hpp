@@ -42,6 +42,7 @@ inline const std::unordered_map<PieceType, sf::Color> PieceColorMap {
     {PieceType::ZRight, sf::Color{50, 230, 50}}
 };
 
+
 inline PieceType get_random_type() {
     static const PieceType type_array[7] = {
         PieceType::Square, PieceType::Line, PieceType::Pronged, PieceType::LLeft, PieceType::LRight, PieceType::ZLeft, PieceType::ZRight
@@ -49,6 +50,7 @@ inline PieceType get_random_type() {
     PieceType type = type_array[rand() % 7];
     return type;
 }
+
 
 inline PieceBlocks get_blocks(PieceType type, int rotation) {
     PieceBlocks rotated_blocks = unrotated_piece_map.at(type);
@@ -62,33 +64,6 @@ inline PieceBlocks get_blocks(PieceType type, int rotation) {
         }
     }
     return rotated_blocks;
-}
-
-inline void draw_piece(sf::RenderWindow& window, PieceType type, int rotation, sf::Vector2i position, int scale = 1) {
-    // Get defined piece with rotation
-    PieceBlocks blocks = get_blocks(type, rotation);
-    // Draw all rectangles
-    for (sf::Vector2i offset : blocks) {
-        sf::RectangleShape rect(sf::Vector2f(scale, scale));
-        rect.setPosition(sf::Vector2f(position.x + offset.x * scale, position.y + offset.y * scale));
-        rect.setFillColor(PieceColorMap.at(type));
-        rect.setOutlineThickness(1);
-        window.draw(rect);
-    }
-}
-
-inline void draw_calculated_drop(sf::RenderWindow& window, PieceType type, int rotation, sf::Vector2i position, int scale = 1) {
-    // Get defined piece with rotation
-    PieceBlocks blocks = get_blocks(type, rotation);
-    // Draw all rectangles
-    for (sf::Vector2i offset : blocks) {
-        sf::RectangleShape rect(sf::Vector2f(scale, scale));
-        rect.setPosition(sf::Vector2f(position.x + offset.x * scale, position.y + offset.y * scale));
-        rect.setFillColor(sf::Color(0, 0, 0));
-        rect.setOutlineColor(sf::Color(255, 255, 255));
-        rect.setOutlineThickness(1);
-        window.draw(rect);
-    }
 }
 
 #endif

@@ -10,6 +10,10 @@ PieceGrid::PieceGrid(sf::Vector2i root_pos) {
 
 }
 
+bool PieceGrid::load_textures() {
+    return piece_texture_.loadFromFile("resources/pieces.png");
+}
+
 bool PieceGrid::can_move_piece_down(sf::Vector2i grid_index, PieceBlocks piece_blocks) const {
 
     for (sf::Vector2i block_pos : piece_blocks) {
@@ -134,30 +138,28 @@ void PieceGrid::draw_grid(sf::RenderWindow& window) const {
 
 }
 
-void PieceGrid::draw_player_piece(sf::RenderWindow& window, PlayerPiece const& player_piece) {
+void PieceGrid::draw_player_piece(sf::RenderWindow& window, PlayerPiece const& player_piece) const {
 
     sf::Vector2i grid_index = player_piece.get_grid_pos();
     PieceBlocks piece_blocks = player_piece.get_piece_blocks();
     PieceType piece_type = player_piece.get_piece_type();
 
-    for (sf::Vector2i block : piece_blocks) {
+    sf::Sprite piece_sprite = get_piece_sprite_(piece_type);
 
-        sf::RectangleShape rect(sf::Vector2f(GRID_SIZE_, GRID_SIZE_));
+    for (sf::Vector2i block : piece_blocks) {
 
         float x_pos = grid_index.x * GRID_SIZE_ + block.x * GRID_SIZE_ + root_pos_.x;
         float y_pos = grid_index.y * GRID_SIZE_ + block.y * GRID_SIZE_ + root_pos_.y;
-        rect.setPosition(sf::Vector2f(x_pos, y_pos));
+        
+        piece_sprite.setPosition(sf::Vector2f(x_pos, y_pos));
 
-        rect.setFillColor(PieceColorMap.at(piece_type));
-        rect.setOutlineThickness(1);
-
-        window.draw(rect);
+        window.draw(piece_sprite);
     
     }
 
 }
 
-void PieceGrid::draw_piece_drop(sf::RenderWindow& window, PlayerPiece const& player_piece) {
+void PieceGrid::draw_piece_drop(sf::RenderWindow& window, PlayerPiece const& player_piece) const {
 
     sf::Vector2i grid_index = player_piece.get_drop_pos();
     PieceBlocks piece_blocks = player_piece.get_piece_blocks();
@@ -189,20 +191,27 @@ void PieceGrid::draw_grid_row_(sf::RenderWindow& window, int y) const {
 
     for (int x = 0; x < COLUMNS_; x++) {
 
-        sf::RectangleShape rect(sf::Vector2f(GRID_SIZE_, GRID_SIZE_));
-        rect.setOutlineThickness(1);
-        rect.setPosition(sf::Vector2f(x * GRID_SIZE_ + root_pos_.x, y * GRID_SIZE_ + root_pos_.y));
+        sf::Vector2f screen_pos = sf::Vector2f(x * GRID_SIZE_ + root_pos_.x, y * GRID_SIZE_ + root_pos_.y);
 
-        if (grid_.at(y).at(x) != PieceType::None) {
+        PieceType piece_type = grid_.at(y).at(x);
+        if (piece_type != PieceType::None) {
 
-            rect.setFillColor(PieceColorMap.at(grid_.at(y).at(x)));
-            window.draw(rect);
+            sf::Sprite piece_sprite = get_piece_sprite_(piece_type);
+
+            piece_sprite.setPosition(screen_pos);
+
+            window.draw(piece_sprite);
 
         }
         else {
 
-            rect.setOutlineColor(sf::Color(0, 0, 170));
+            sf::RectangleShape rect(sf::Vector2f(GRID_SIZE_, GRID_SIZE_));
+            rect.setPosition(screen_pos);
+
             rect.setFillColor(sf::Color(0, 0, 0));
+            rect.setOutlineColor(sf::Color(0, 0, 170));
+            rect.setOutlineThickness(1);
+
             window.draw(rect);
 
         }
@@ -216,5 +225,18 @@ void PieceGrid::empty_grid_() {
     for (int i = 0; i < ROWS_; i++) {
         grid_.at(i).fill(PieceType::None);
     }
+
+}
+
+sf::Sprite PieceGrid::get_piece_sprite_(PieceType piece_type) const {
+
+    sf::Sprite sprite;
+    sprite.setTexture(piece_texture_);
+    sprite.setTextureRect(piece_texture_rects_.at(piece_type));
+
+    sf::FloatRect sprite_size = sprite.getGlobalBounds();
+    sprite.setScale(sf::Vector2f(GRID_SIZE_ / sprite_size.width, GRID_SIZE_ / sprite_size.height));
+
+    return sprite;
 
 }
