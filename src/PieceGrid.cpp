@@ -1,9 +1,10 @@
 #include "PieceGrid.hpp"
 #include "PlayerPiece.hpp"
 
-PieceGrid::PieceGrid(sf::Vector2i root_pos) {
+PieceGrid::PieceGrid(sf::Vector2i root_pos, std::shared_ptr<SpriteManager> sprite_manager_sptr) {
 
     root_pos_ = root_pos;
+    sprite_manager_sptr_ = sprite_manager_sptr;
 
     // Initialise grid
     empty_grid();
@@ -16,10 +17,6 @@ void PieceGrid::empty_grid() {
         grid_.at(i).fill(PieceType::None);
     }
 
-}
-
-bool PieceGrid::load_textures() {
-    return piece_texture_.loadFromFile("resources/pieces.png");
 }
 
 bool PieceGrid::can_move_piece_down(sf::Vector2i grid_index, PieceBlocks piece_blocks) const {
@@ -158,7 +155,7 @@ void PieceGrid::draw_player_piece(sf::RenderWindow& window, PlayerPiece const& p
     PieceBlocks piece_blocks = player_piece.get_piece_blocks();
     PieceType piece_type = player_piece.get_piece_type();
 
-    sf::Sprite piece_sprite = get_piece_sprite_(piece_type);
+    sf::Sprite piece_sprite = sprite_manager_sptr_->get_piece_sprite(piece_type);
 
     for (sf::Vector2i block : piece_blocks) {
 
@@ -214,7 +211,7 @@ void PieceGrid::draw_grid_row_(sf::RenderWindow& window, int y) const {
         PieceType piece_type = grid_.at(y).at(x);
         if (piece_type != PieceType::None) {
 
-            sf::Sprite piece_sprite = get_piece_sprite_(piece_type);
+            sf::Sprite piece_sprite = sprite_manager_sptr_->get_piece_sprite(piece_type);
 
             piece_sprite.setPosition(screen_pos);
 
@@ -235,18 +232,5 @@ void PieceGrid::draw_grid_row_(sf::RenderWindow& window, int y) const {
         }
 
     }
-
-}
-
-sf::Sprite PieceGrid::get_piece_sprite_(PieceType piece_type) const {
-
-    sf::Sprite sprite;
-    sprite.setTexture(piece_texture_);
-    sprite.setTextureRect(piece_texture_rects_.at(piece_type));
-
-    sf::FloatRect sprite_size = sprite.getGlobalBounds();
-    sprite.setScale(sf::Vector2f(GRID_SIZE / sprite_size.width, GRID_SIZE / sprite_size.height));
-
-    return sprite;
 
 }

@@ -1,10 +1,12 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include <iostream>
+#include <memory>
 
 #include "Piece.hpp"
 #include "PieceGrid.hpp"
 #include "PlayerPiece.hpp"
+#include "SpriteManager.hpp"
 
 
 int main() {
@@ -14,6 +16,8 @@ int main() {
     sf::RenderWindow window(sf::VideoMode({650, 600}), "Tetris");
     window.setFramerateLimit(60);
     sf::Clock clock;
+
+
 
     sf::Image icon;
     if (!icon.loadFromFile("resources/icon.png"))
@@ -27,11 +31,14 @@ int main() {
     line_text.setFont(font);
     line_text.setFillColor(sf::Color(255, 255, 255));
 
-    PieceGrid piece_grid(sf::Vector2i(50, 50));
-    PlayerPiece player_piece(piece_grid);
 
-    if (!piece_grid.load_textures())
+
+    std::shared_ptr<SpriteManager> sprite_manager_sptr = std::make_shared<SpriteManager>(SpriteManager());
+    if (!sprite_manager_sptr->load_sprites(GRID_SIZE))
         return -1;
+
+    PieceGrid piece_grid(sf::Vector2i(50, 50), sprite_manager_sptr);
+    PlayerPiece player_piece(piece_grid);
     
     
     while (window.isOpen()) {
@@ -46,24 +53,28 @@ int main() {
             
             if (event.type == sf::Event::KeyPressed) {
 
-                if (event.key.code == sf::Keyboard::J) {
-                    player_piece.rotate(piece_grid, -1);
-                }
+                switch (event.key.code) {
 
-                if (event.key.code == sf::Keyboard::K) {
-                    player_piece.rotate(piece_grid, 1);
-                }
+                    case (sf::Keyboard::J):
+                        player_piece.rotate(piece_grid, -1);
+                        break;
+                    
+                    case (sf::Keyboard::K):
+                        player_piece.rotate(piece_grid, 1);
+                        break;
+                    
+                    case (sf::Keyboard::A):
+                        player_piece.move_horizontal(piece_grid, PieceMove::Left);
+                        break;
+                    
+                    case (sf::Keyboard::D):
+                        player_piece.move_horizontal(piece_grid, PieceMove::Right);
+                        break;
+                    
+                    case (sf::Keyboard::W):
+                        player_piece.hard_drop(piece_grid);
+                        break;
 
-                if (event.key.code == sf::Keyboard::A) {
-                    player_piece.move_horizontal(piece_grid, PieceMove::Left);
-                }
-
-                if (event.key.code == sf::Keyboard::D) {
-                    player_piece.move_horizontal(piece_grid, PieceMove::Right);
-                }
-
-                if (event.key.code == sf::Keyboard::W) {
-                    player_piece.hard_drop(piece_grid);
                 }
 
             }
