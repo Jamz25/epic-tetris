@@ -28,7 +28,7 @@ public:
 
     void move_horizontal(PieceGrid const& piece_grid, PieceMove piece_move);
 
-    void rotate(PieceGrid const& piece_grid);
+    void rotate(PieceGrid const& piece_grid, int dir);
 
     void hard_drop(PieceGrid& piece_grid);
 

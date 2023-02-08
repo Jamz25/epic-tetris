@@ -41,8 +41,12 @@ int main() {
             
             if (event.type == sf::Event::KeyPressed) {
 
-                if (event.key.code == sf::Keyboard::Space) {
-                    player_piece.rotate(piece_grid);
+                if (event.key.code == sf::Keyboard::J) {
+                    player_piece.rotate(piece_grid, -1);
+                }
+
+                if (event.key.code == sf::Keyboard::K) {
+                    player_piece.rotate(piece_grid, 1);
                 }
 
                 if (event.key.code == sf::Keyboard::A) {

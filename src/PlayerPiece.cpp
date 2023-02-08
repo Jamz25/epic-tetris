@@ -12,8 +12,10 @@ void PlayerPiece::reset(PieceGrid const& piece_grid) {
     lines_cleared_ = 0;
     gameover_ = false;
 
-    piece_queue_.fill(get_random_type());
-
+    for (PieceType& piece_type : piece_queue_) {
+        piece_type = get_random_type();
+    }
+    
     // "Respawn" piece
     respawn_(piece_grid);
 
@@ -23,7 +25,7 @@ void PlayerPiece::update(float delta_time, PieceGrid& piece_grid) {
 
     float move_down_tick_max = 1.0f;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        move_down_tick_max = 0.03f;
+        move_down_tick_max = 0.06f;
     }
 
     move_down_tick_ += delta_time;
@@ -61,11 +63,13 @@ void PlayerPiece::move_horizontal(PieceGrid const& piece_grid, PieceMove piece_m
 
 }
 
-void PlayerPiece::rotate(PieceGrid const& piece_grid) {
+void PlayerPiece::rotate(PieceGrid const& piece_grid, int dir) {
 
-    PieceRotateAttempt rotate_attempt = piece_grid.attempt_rotate(grid_pos_, get_blocks(piece_type_, (rotation_ + 1) % 4));
+    PieceRotateAttempt rotate_attempt = piece_grid.attempt_rotate(grid_pos_, get_blocks(piece_type_, (rotation_ + dir) % 4));
     if (rotate_attempt.success) {
-        rotation_++;
+        rotation_ += dir;
+        if (rotation_ > 3) rotation_ = 0;
+        if (rotation_ < 0) rotation_ = 3;
         piece_blocks_ = get_blocks(piece_type_, rotation_);
     }
 
