@@ -1,9 +1,21 @@
 #include "PlayerPiece.hpp"
 
-PlayerPiece::PlayerPiece() {
+PlayerPiece::PlayerPiece(PieceGrid const& piece_grid) {
 
-    // Reset member variables
-    reset_();
+    // Reset all values to default
+    reset(piece_grid);
+
+}
+
+void PlayerPiece::reset(PieceGrid const& piece_grid) {
+
+    lines_cleared_ = 0;
+    gameover_ = false;
+
+    piece_queue_.fill(get_random_type());
+
+    // "Respawn" piece
+    respawn_(piece_grid);
 
 }
 
@@ -25,9 +37,10 @@ void PlayerPiece::update(float delta_time, PieceGrid& piece_grid) {
         else {
             
             piece_grid.add_fallen_piece(grid_pos_, piece_blocks_, piece_type_);
-            piece_grid.sweep_fallen_pieces();
+            int lines_cleared = piece_grid.sweep_fallen_pieces();
+            lines_cleared_ += lines_cleared;
 
-            reset_();
+            respawn_(piece_grid);
 
         }
 
@@ -63,9 +76,10 @@ void PlayerPiece::rotate(PieceGrid const& piece_grid) {
 void PlayerPiece::hard_drop(PieceGrid& piece_grid) {
 
     piece_grid.add_fallen_piece(drop_position_, piece_blocks_, piece_type_);
-    piece_grid.sweep_fallen_pieces();
+    int lines_cleared = piece_grid.sweep_fallen_pieces();
+    lines_cleared_ += lines_cleared;
 
-    reset_();
+    respawn_(piece_grid);
 
 }
 
@@ -76,6 +90,10 @@ sf::Vector2i PlayerPiece::get_drop_pos() const {return drop_position_;}
 PieceType PlayerPiece::get_piece_type() const {return piece_type_;}
 
 PieceBlocks PlayerPiece::get_piece_blocks() const {return piece_blocks_;}
+
+int PlayerPiece::get_lines_cleared() const {return lines_cleared_;}
+
+bool PlayerPiece::is_game_over() const {return gameover_;}
 
 
 //
@@ -93,12 +111,29 @@ void PlayerPiece::calculate_drop_position_(PieceGrid const& piece_grid) {
 
 }
 
-void PlayerPiece::reset_() {
+void PlayerPiece::respawn_(PieceGrid const& piece_grid) {
 
-    grid_pos_ = sf::Vector2i(5, 3);
-    piece_type_ = get_random_type();
+    grid_pos_ = sf::Vector2i(5, 2);
+    
+    piece_type_ = piece_queue_[0];
+    piece_queue_[0] = piece_queue_[1];
+    piece_queue_[1] = piece_queue_[2];
+    piece_queue_[2] = get_random_type();
+
     rotation_ = 0;
     move_down_tick_ = 0;
     piece_blocks_ = get_blocks(piece_type_, rotation_);
+
+    for (sf::Vector2i block : piece_blocks_) {
+
+        int x_index = grid_pos_.x + block.x;
+        int y_index = grid_pos_.y + block.y;
+
+        if (piece_grid.get_grid_array().at(y_index).at(x_index) != PieceType::None) {
+            gameover_ = true;
+            break;
+        }
+
+    }
 
 }

@@ -14,11 +14,14 @@ struct PieceRotateAttempt {
     int x_push = 0;
 };
 
+const int ROWS = 20;
+const int COLUMNS = 10;
+const int GRID_SIZE = 25;
+
+typedef std::array<std::array<PieceType, COLUMNS>, ROWS> GridArray;
+
 class PieceGrid {
 private:
-    static const int ROWS_ = 20;
-    static const int COLUMNS_ = 10;
-    static const int GRID_SIZE_ = 25;
 
     sf::Texture piece_texture_;
     inline static const std::unordered_map<PieceType, sf::IntRect> piece_texture_rects_ {
@@ -31,12 +34,14 @@ private:
         {PieceType::ZRight, sf::IntRect{{48, 0}, {48, 48}}}
     };
 
-    std::array<std::array<PieceType, COLUMNS_>, ROWS_> grid_;
+    GridArray grid_;
 
     sf::Vector2i root_pos_;
 
 public:
     PieceGrid(sf::Vector2i root_pos);
+
+    void empty_grid();
 
     bool load_textures();
 
@@ -48,7 +53,7 @@ public:
 
     void add_fallen_piece(sf::Vector2i grid_index, PieceBlocks piece_blocks, PieceType piece_type);
 
-    void sweep_fallen_pieces();
+    int sweep_fallen_pieces();
 
     void draw_grid(sf::RenderWindow& window) const;
 
@@ -56,9 +61,10 @@ public:
 
     void draw_piece_drop(sf::RenderWindow& window, PlayerPiece const& player_piece) const;
 
+    GridArray const& get_grid_array() const;
+
 
 private:
-    void empty_grid_();
 
     void draw_grid_row_(sf::RenderWindow& window, int y) const;
 

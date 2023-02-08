@@ -2,6 +2,7 @@
 #define PLAYER_PIECE_HPP
 
 #include <SFML/Graphics.hpp>
+#include <array>
 #include "Piece.hpp"
 #include "PieceGrid.hpp"
 #include "PieceMove.hpp"
@@ -12,11 +13,16 @@ private:
     sf::Vector2i grid_pos_, drop_position_;
     PieceType piece_type_;
     PieceBlocks piece_blocks_;
-    int rotation_;
+    int rotation_, lines_cleared_;
     float move_down_tick_;
+    bool gameover_;
+
+    std::array<PieceType, 3> piece_queue_;
 
 public:
-    PlayerPiece();
+    PlayerPiece(PieceGrid const& piece_grid);
+
+    void reset(PieceGrid const& piece_grid);
 
     void update(float delta_time, PieceGrid& piece_grid);
 
@@ -34,8 +40,12 @@ public:
 
     PieceBlocks get_piece_blocks() const;
 
+    int get_lines_cleared() const;
+
+    bool is_game_over() const;
+
 private:
-    void reset_();
+    void respawn_(PieceGrid const& piece_grid);
     
     void calculate_drop_position_(PieceGrid const& piece_grid);
 
