@@ -8,6 +8,7 @@
 #include "Piece.hpp"
 #include "PieceMove.hpp"
 #include "SpriteManager.hpp"
+#include "Constants.hpp"
 
 // Forward declaration to fix circular dependancy
 class PlayerPiece;
@@ -16,10 +17,6 @@ struct PieceRotateAttempt {
     bool success = true;
     int x_push = 0;
 };
-
-const int ROWS = 20;
-const int COLUMNS = 10;
-const int GRID_SIZE = 25;
 
 typedef std::array<std::array<PieceType, COLUMNS>, ROWS> GridArray;
 

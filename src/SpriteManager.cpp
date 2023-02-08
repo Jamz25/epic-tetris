@@ -12,7 +12,7 @@ const std::unordered_map<PieceType, int> SpriteManager::piece_texture_offsets_ {
     {PieceType::ZRight, 48}
 };
 
-bool SpriteManager::load_sprites(int grid_size) {
+bool SpriteManager::load_sprites() {
 
     if (!piece_texture_.loadFromFile(sprite_path_))
         return false;
@@ -27,7 +27,7 @@ bool SpriteManager::load_sprites(int grid_size) {
         sprite.setTextureRect(offset_rect);
 
         sf::FloatRect sprite_size = sprite.getGlobalBounds();
-        sprite.setScale(sf::Vector2f(grid_size / sprite_size.width, grid_size / sprite_size.height));
+        sprite.setScale(sf::Vector2f(GRID_SIZE / sprite_size.width, GRID_SIZE / sprite_size.height));
 
         piece_sprites_.insert(std::pair<PieceType, sf::Sprite>(piece_type_pair.first, sprite));
 

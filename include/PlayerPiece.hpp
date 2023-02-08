@@ -3,6 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <array>
+#include <cmath>
+
 #include "Piece.hpp"
 #include "PieceGrid.hpp"
 #include "PieceMove.hpp"
@@ -14,6 +16,7 @@ private:
     PieceType piece_type_;
     PieceBlocks piece_blocks_;
     int rotation_, lines_cleared_;
+    long score_;
     float move_down_tick_;
     bool gameover_;
 
@@ -42,12 +45,18 @@ public:
 
     int get_lines_cleared() const;
 
+    int get_score() const;
+
     bool is_game_over() const;
+
+    std::array<PieceType, 3> get_piece_queue() const;
 
 private:
     void respawn_(PieceGrid const& piece_grid);
     
     void calculate_drop_position_(PieceGrid const& piece_grid);
+
+    void add_score_(int lines_cleared);
 
 };
 

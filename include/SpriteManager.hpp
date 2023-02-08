@@ -3,7 +3,9 @@
 
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
+
 #include "Piece.hpp"
+#include "Constants.hpp"
 
 class SpriteManager {
 private:
@@ -18,7 +20,7 @@ private:
 public:
     SpriteManager() = default;
 
-    bool load_sprites(int grid_size);
+    bool load_sprites();
 
     sf::Sprite get_piece_sprite(PieceType piece_type);
 

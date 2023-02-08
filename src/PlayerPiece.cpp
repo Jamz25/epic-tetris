@@ -10,6 +10,7 @@ PlayerPiece::PlayerPiece(PieceGrid const& piece_grid) {
 void PlayerPiece::reset(PieceGrid const& piece_grid) {
 
     lines_cleared_ = 0;
+    score_ = 0;
     gameover_ = false;
 
     for (PieceType& piece_type : piece_queue_) {
@@ -40,7 +41,7 @@ void PlayerPiece::update(float delta_time, PieceGrid& piece_grid) {
             
             piece_grid.add_fallen_piece(grid_pos_, piece_blocks_, piece_type_);
             int lines_cleared = piece_grid.sweep_fallen_pieces();
-            lines_cleared_ += lines_cleared;
+            add_score_(lines_cleared);
 
             respawn_(piece_grid);
 
@@ -81,7 +82,7 @@ void PlayerPiece::hard_drop(PieceGrid& piece_grid) {
 
     piece_grid.add_fallen_piece(drop_position_, piece_blocks_, piece_type_);
     int lines_cleared = piece_grid.sweep_fallen_pieces();
-    lines_cleared_ += lines_cleared;
+    add_score_(lines_cleared);
 
     respawn_(piece_grid);
 
@@ -97,7 +98,11 @@ PieceBlocks PlayerPiece::get_piece_blocks() const {return piece_blocks_;}
 
 int PlayerPiece::get_lines_cleared() const {return lines_cleared_;}
 
+int PlayerPiece::get_score() const {return score_;}
+
 bool PlayerPiece::is_game_over() const {return gameover_;}
+
+std::array<PieceType, 3> PlayerPiece::get_piece_queue() const {return piece_queue_;}
 
 
 //
@@ -139,5 +144,16 @@ void PlayerPiece::respawn_(PieceGrid const& piece_grid) {
         }
 
     }
+
+}
+
+void PlayerPiece::add_score_(int lines_cleared) {
+
+    if (lines_cleared == 0)
+        return;
+
+    lines_cleared_ += lines_cleared;
+
+    score_ += lines_cleared * 5 + std::pow(5, lines_cleared);
 
 }
