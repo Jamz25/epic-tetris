@@ -3,8 +3,12 @@
 
 #include <SFML/Graphics.hpp>
 #include <array>
+#include <memory>
+
 #include "Piece.hpp"
 #include "PieceMove.hpp"
+#include "SpriteManager.hpp"
+#include "Constants.hpp"
 
 // Forward declaration to fix circular dependancy
 class PlayerPiece;
@@ -14,18 +18,21 @@ struct PieceRotateAttempt {
     int x_push = 0;
 };
 
+typedef std::array<std::array<PieceType, COLUMNS>, ROWS> GridArray;
+
 class PieceGrid {
 private:
-    static const int ROWS_ = 20;
-    static const int COLUMNS_ = 10;
-    static const int GRID_SIZE_ = 25;
 
-    std::array<std::array<PieceType, COLUMNS_>, ROWS_> grid_;
+    GridArray grid_;
 
     sf::Vector2i root_pos_;
 
+    std::shared_ptr<SpriteManager> sprite_manager_sptr_;
+
 public:
-    PieceGrid(sf::Vector2i root_pos);
+    PieceGrid(sf::Vector2i root_pos, std::shared_ptr<SpriteManager> sprite_manager_sptr);
+
+    void empty_grid();
 
     bool can_move_piece_down(sf::Vector2i grid_index, PieceBlocks piece_blocks) const;
 
@@ -35,17 +42,18 @@ public:
 
     void add_fallen_piece(sf::Vector2i grid_index, PieceBlocks piece_blocks, PieceType piece_type);
 
-    void sweep_fallen_pieces();
+    int sweep_fallen_pieces();
 
     void draw_grid(sf::RenderWindow& window) const;
 
-    void draw_player_piece(sf::RenderWindow& window, PlayerPiece const& player_piece);
+    void draw_player_piece(sf::RenderWindow& window, PlayerPiece const& player_piece) const;
 
-    void draw_piece_drop(sf::RenderWindow& window, PlayerPiece const& player_piece);
+    void draw_piece_drop(sf::RenderWindow& window, PlayerPiece const& player_piece) const;
+
+    GridArray const& get_grid_array() const;
 
 
 private:
-    void empty_grid_();
 
     void draw_grid_row_(sf::RenderWindow& window, int y) const;
 

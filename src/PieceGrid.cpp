@@ -1,12 +1,21 @@
 #include "PieceGrid.hpp"
 #include "PlayerPiece.hpp"
 
-PieceGrid::PieceGrid(sf::Vector2i root_pos) {
+PieceGrid::PieceGrid(sf::Vector2i root_pos, std::shared_ptr<SpriteManager> sprite_manager_sptr) {
 
     root_pos_ = root_pos;
+    sprite_manager_sptr_ = sprite_manager_sptr;
 
     // Initialise grid
-    empty_grid_();
+    empty_grid();
+
+}
+
+void PieceGrid::empty_grid() {
+
+    for (int i = 0; i < ROWS; i++) {
+        grid_.at(i).fill(PieceType::None);
+    }
 
 }
 
@@ -17,7 +26,7 @@ bool PieceGrid::can_move_piece_down(sf::Vector2i grid_index, PieceBlocks piece_b
         int x_index = grid_index.x + block_pos.x;
         int y_index = grid_index.y + block_pos.y;
 
-        if (y_index >= ROWS_ - 1) {
+        if (y_index >= ROWS - 1) {
             return false;
         }
         if (grid_.at(y_index + 1).at(x_index) != PieceType::None) {
@@ -39,7 +48,7 @@ bool PieceGrid::can_move_piece_side(sf::Vector2i grid_index, PieceBlocks piece_b
         int x_index = grid_index.x + block_pos.x;
         int y_index = grid_index.y + block_pos.y;
 
-        if (x_index + dir < 0 || x_index + dir > COLUMNS_ - 1) {
+        if (x_index + dir < 0 || x_index + dir > COLUMNS - 1) {
             return false;
         }
         if (grid_.at(y_index).at(x_index + dir) != PieceType::None) {
@@ -66,8 +75,8 @@ PieceRotateAttempt PieceGrid::attempt_rotate(sf::Vector2i grid_index, PieceBlock
             piece_rotate_attempt.x_push = std::max(piece_rotate_attempt.x_push, x_index * -1);
             continue;
         }
-        else if (x_index > COLUMNS_ - 1) {
-            piece_rotate_attempt.x_push = std::min(piece_rotate_attempt.x_push, (x_index - COLUMNS_ - 1));
+        else if (x_index > COLUMNS - 1) {
+            piece_rotate_attempt.x_push = std::min(piece_rotate_attempt.x_push, (x_index - COLUMNS - 1));
             continue;
         }
 
@@ -92,7 +101,9 @@ void PieceGrid::add_fallen_piece(sf::Vector2i grid_index, PieceBlocks piece_bloc
 
 }
 
-void PieceGrid::sweep_fallen_pieces() {
+int PieceGrid::sweep_fallen_pieces() {
+
+    int lines_cleared = 0;
 
     for (int row = 0; row < 20; row++) {
 
@@ -110,6 +121,8 @@ void PieceGrid::sweep_fallen_pieces() {
 
         if (full_row) {
 
+            lines_cleared++;
+
             grid_.at(row).fill(PieceType::None);
 
             for (int reverse = row; reverse > 0; reverse--) {
@@ -120,13 +133,15 @@ void PieceGrid::sweep_fallen_pieces() {
 
     }
 
+    return lines_cleared;
+
 }
 
 void PieceGrid::draw_grid(sf::RenderWindow& window) const {
 
     // Draw each grid tile
     // Either filled in with a dropped piece or empty
-    for (int y = 0; y < ROWS_; y++) {
+    for (int y = 0; y < ROWS; y++) {
 
         draw_grid_row_(window, y);
 
@@ -134,40 +149,38 @@ void PieceGrid::draw_grid(sf::RenderWindow& window) const {
 
 }
 
-void PieceGrid::draw_player_piece(sf::RenderWindow& window, PlayerPiece const& player_piece) {
+void PieceGrid::draw_player_piece(sf::RenderWindow& window, PlayerPiece const& player_piece) const {
 
     sf::Vector2i grid_index = player_piece.get_grid_pos();
     PieceBlocks piece_blocks = player_piece.get_piece_blocks();
     PieceType piece_type = player_piece.get_piece_type();
 
+    sf::Sprite piece_sprite = sprite_manager_sptr_->get_piece_sprite(piece_type);
+
     for (sf::Vector2i block : piece_blocks) {
 
-        sf::RectangleShape rect(sf::Vector2f(GRID_SIZE_, GRID_SIZE_));
+        float x_pos = grid_index.x * GRID_SIZE + block.x * GRID_SIZE + root_pos_.x;
+        float y_pos = grid_index.y * GRID_SIZE + block.y * GRID_SIZE + root_pos_.y;
+        
+        piece_sprite.setPosition(sf::Vector2f(x_pos, y_pos));
 
-        float x_pos = grid_index.x * GRID_SIZE_ + block.x * GRID_SIZE_ + root_pos_.x;
-        float y_pos = grid_index.y * GRID_SIZE_ + block.y * GRID_SIZE_ + root_pos_.y;
-        rect.setPosition(sf::Vector2f(x_pos, y_pos));
-
-        rect.setFillColor(PieceColorMap.at(piece_type));
-        rect.setOutlineThickness(1);
-
-        window.draw(rect);
+        window.draw(piece_sprite);
     
     }
 
 }
 
-void PieceGrid::draw_piece_drop(sf::RenderWindow& window, PlayerPiece const& player_piece) {
+void PieceGrid::draw_piece_drop(sf::RenderWindow& window, PlayerPiece const& player_piece) const {
 
     sf::Vector2i grid_index = player_piece.get_drop_pos();
     PieceBlocks piece_blocks = player_piece.get_piece_blocks();
 
     for (sf::Vector2i block : piece_blocks) {
 
-        sf::RectangleShape rect(sf::Vector2f(GRID_SIZE_, GRID_SIZE_));
+        sf::RectangleShape rect(sf::Vector2f(GRID_SIZE, GRID_SIZE));
 
-        float x_pos = grid_index.x * GRID_SIZE_ + block.x * GRID_SIZE_ + root_pos_.x;
-        float y_pos = grid_index.y * GRID_SIZE_ + block.y * GRID_SIZE_ + root_pos_.y;
+        float x_pos = grid_index.x * GRID_SIZE + block.x * GRID_SIZE + root_pos_.x;
+        float y_pos = grid_index.y * GRID_SIZE + block.y * GRID_SIZE + root_pos_.y;
         rect.setPosition(sf::Vector2f(x_pos, y_pos));
 
         rect.setFillColor({0, 0, 0});
@@ -180,6 +193,10 @@ void PieceGrid::draw_piece_drop(sf::RenderWindow& window, PlayerPiece const& pla
 
 }
 
+GridArray const& PieceGrid::get_grid_array() const {
+    return grid_;
+}
+
 
 //
 //  PRIVATE FUNCTIONS
@@ -187,34 +204,33 @@ void PieceGrid::draw_piece_drop(sf::RenderWindow& window, PlayerPiece const& pla
 
 void PieceGrid::draw_grid_row_(sf::RenderWindow& window, int y) const {
 
-    for (int x = 0; x < COLUMNS_; x++) {
+    for (int x = 0; x < COLUMNS; x++) {
 
-        sf::RectangleShape rect(sf::Vector2f(GRID_SIZE_, GRID_SIZE_));
-        rect.setOutlineThickness(1);
-        rect.setPosition(sf::Vector2f(x * GRID_SIZE_ + root_pos_.x, y * GRID_SIZE_ + root_pos_.y));
+        sf::Vector2f screen_pos = sf::Vector2f(x * GRID_SIZE + root_pos_.x, y * GRID_SIZE + root_pos_.y);
 
-        if (grid_.at(y).at(x) != PieceType::None) {
+        PieceType piece_type = grid_.at(y).at(x);
+        if (piece_type != PieceType::None) {
 
-            rect.setFillColor(PieceColorMap.at(grid_.at(y).at(x)));
-            window.draw(rect);
+            sf::Sprite piece_sprite = sprite_manager_sptr_->get_piece_sprite(piece_type);
+
+            piece_sprite.setPosition(screen_pos);
+
+            window.draw(piece_sprite);
 
         }
         else {
 
-            rect.setOutlineColor(sf::Color(0, 0, 170));
+            sf::RectangleShape rect(sf::Vector2f(GRID_SIZE, GRID_SIZE));
+            rect.setPosition(screen_pos);
+
             rect.setFillColor(sf::Color(0, 0, 0));
+            rect.setOutlineColor(sf::Color(0, 0, 170));
+            rect.setOutlineThickness(1);
+
             window.draw(rect);
 
         }
 
-    }
-
-}
-
-void PieceGrid::empty_grid_() {
-
-    for (int i = 0; i < ROWS_; i++) {
-        grid_.at(i).fill(PieceType::None);
     }
 
 }
