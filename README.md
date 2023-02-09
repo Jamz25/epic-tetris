@@ -1,6 +1,6 @@
 # Epic Tetris
 
-Tetris clone made in SFML</br></br>
+Tetris clone made in SFML.</br>
 
 ## Controls
  - A + D    - Left and Right</br>
