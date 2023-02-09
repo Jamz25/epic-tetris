@@ -54,6 +54,9 @@ void UIManager::draw_piece_queue(sf::RenderWindow& window, sf::Vector2f position
 
     }
 
+    sf::Vector2f text_pos = sf::Vector2f(position.x, position.y - 30);
+    draw_text(window, "Next", text_pos, sf::Color(255, 255, 255), 20);
+
 }
 
 void UIManager::draw_hold_piece(sf::RenderWindow& window, sf::Vector2f position, PieceType piece_type, bool can_swap_hold) const {
@@ -67,6 +70,9 @@ void UIManager::draw_hold_piece(sf::RenderWindow& window, sf::Vector2f position,
     border.setFillColor(sf::Color(0, 0, 0));
 
     window.draw(border);
+
+    sf::Vector2f text_pos = sf::Vector2f(position.x, position.y - 30);
+    draw_text(window, "Hold", text_pos, sf::Color(255, 255, 255), 20);
 
     if (piece_type == PieceType::None)
         return;

@@ -119,16 +119,9 @@ int main() {
             30
         );
 
-        ui_manager.draw_text(window,
-            std::to_string(static_cast<int>(1 / delta_time)) + " fps",
-            sf::Vector2f(10, 10),
-            sf::Color(255, 255, 255),
-            30
-        );
-
         ui_manager.draw_piece_queue(window, sf::Vector2f(550, 70), player_piece.get_piece_queue());
 
-        ui_manager.draw_hold_piece(window, sf::Vector2f(105, 70), player_piece.get_held_piece_type(), player_piece.can_swap_hold());
+        ui_manager.draw_hold_piece(window, sf::Vector2f(155, 70), player_piece.get_held_piece_type(), player_piece.can_swap_hold());
 
         window.display();
 
