@@ -14,7 +14,7 @@ int main() {
 
     srand((unsigned)time(0));
 
-    sf::RenderWindow window(sf::VideoMode({650, 600}), "Tetris");
+    sf::RenderWindow window(sf::VideoMode({800, 600}), "Tetris");
     window.setFramerateLimit(60);
     sf::Clock clock;
 
@@ -29,7 +29,7 @@ int main() {
     std::shared_ptr<SpriteManager> sprite_manager_sptr = std::make_shared<SpriteManager>(SpriteManager());
 
     UIManager ui_manager(sprite_manager_sptr);
-    PieceGrid piece_grid(sf::Vector2i(50, 50), sprite_manager_sptr);
+    PieceGrid piece_grid(sf::Vector2i(275, 50), sprite_manager_sptr);
     PlayerPiece player_piece(piece_grid);
 
 
@@ -73,6 +73,10 @@ int main() {
                     case (sf::Keyboard::W):
                         player_piece.hard_drop(piece_grid);
                         break;
+                    
+                    case (sf::Keyboard::Q):
+                        player_piece.swap_held_piece();
+                        break;
 
                 }
 
@@ -97,16 +101,20 @@ int main() {
 
         piece_grid.draw_player_piece(window, player_piece);
 
+        ui_manager.draw_text(window, "Lines cleared", sf::Vector2f(550, 330), sf::Color(255, 255, 255), 30);
+
         ui_manager.draw_text(window,
-            "Lines cleared: " + std::to_string(player_piece.get_lines_cleared()),
-            sf::Vector2f(340, 430),
+            std::to_string(player_piece.get_lines_cleared()),
+            sf::Vector2f(550, 365),
             sf::Color(255, 255, 255),
             30
         );
 
+        ui_manager.draw_text(window, "Score", sf::Vector2f(550, 450), sf::Color(255, 255, 255), 30);
+
         ui_manager.draw_text(window,
-            "Score: " + std::to_string(player_piece.get_score()),
-            sf::Vector2f(340, 480),
+            std::to_string(player_piece.get_score()),
+            sf::Vector2f(550, 485),
             sf::Color(255, 255, 255),
             30
         );
@@ -118,7 +126,9 @@ int main() {
             30
         );
 
-        ui_manager.draw_piece_queue(window, sf::Vector2f(330, 70), player_piece.get_piece_queue());
+        ui_manager.draw_piece_queue(window, sf::Vector2f(550, 70), player_piece.get_piece_queue());
+
+        ui_manager.draw_hold_piece(window, sf::Vector2f(105, 70), player_piece.get_held_piece_type(), player_piece.can_swap_hold());
 
         window.display();
 
