@@ -15,7 +15,7 @@ private:
 
     sf::Font font_;
 
-    sf::Text text_;
+    mutable sf::Text text_;
 
     std::shared_ptr<SpriteManager> sprite_manager_sptr_;
 
@@ -24,9 +24,14 @@ public:
 
     bool load_font();
 
-    void draw_text(sf::RenderWindow& window, std::string string, sf::Vector2f position, sf::Color color, int size);
+    void draw_text(sf::RenderWindow& window, std::string string, sf::Vector2f position, sf::Color color, int size) const;
 
-    void draw_piece_queue(sf::RenderWindow& window, sf::Vector2f position, std::array<PieceType, 3> piece_queue);
+    void draw_piece_queue(sf::RenderWindow& window, sf::Vector2f position, std::array<PieceType, 3> piece_queue) const;
+
+    void draw_hold_piece(sf::RenderWindow& window, sf::Vector2f position, PieceType piece_type, bool can_swap_hold) const;
+
+private:
+    void draw_ui_piece_(sf::RenderWindow& window, sf::Vector2f position, PieceType piece_type, int rotation, bool greyed = false) const;
 
 };
 

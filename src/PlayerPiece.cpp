@@ -1,5 +1,7 @@
 #include "PlayerPiece.hpp"
 
+const sf::Vector2i PlayerPiece::spawn_pos_ = sf::Vector2i(5, 2);
+
 PlayerPiece::PlayerPiece(PieceGrid const& piece_grid) {
 
     // Reset all values to default
@@ -12,6 +14,8 @@ void PlayerPiece::reset(PieceGrid const& piece_grid) {
     lines_cleared_ = 0;
     score_ = 0;
     gameover_ = false;
+    can_swap_hold_ = true;
+    held_piece_type_ = PieceType::None;
 
     for (PieceType& piece_type : piece_queue_) {
         piece_type = get_random_type();
@@ -88,6 +92,30 @@ void PlayerPiece::hard_drop(PieceGrid& piece_grid) {
 
 }
 
+void PlayerPiece::swap_held_piece() {
+
+    if (!can_swap_hold_)
+        return;
+    
+    can_swap_hold_ = false;
+
+    PieceType old_piece_type = piece_type_;
+    if (held_piece_type_ == PieceType::None) {
+        rotate_piece_queue_();
+    }
+    else {
+        piece_type_ = held_piece_type_;
+    }
+    held_piece_type_ = old_piece_type;
+
+    grid_pos_ = spawn_pos_;
+
+    rotation_ = 0;
+    move_down_tick_ = 0;
+    piece_blocks_ = get_blocks(piece_type_, rotation_);
+
+}
+
 sf::Vector2i PlayerPiece::get_grid_pos() const {return grid_pos_;}
 
 sf::Vector2i PlayerPiece::get_drop_pos() const {return drop_position_;}
@@ -103,6 +131,10 @@ int PlayerPiece::get_score() const {return score_;}
 bool PlayerPiece::is_game_over() const {return gameover_;}
 
 std::array<PieceType, 3> PlayerPiece::get_piece_queue() const {return piece_queue_;}
+
+PieceType PlayerPiece::get_held_piece_type() const {return held_piece_type_;}
+
+bool PlayerPiece::can_swap_hold() const {return can_swap_hold_;}
 
 
 //
@@ -122,12 +154,9 @@ void PlayerPiece::calculate_drop_position_(PieceGrid const& piece_grid) {
 
 void PlayerPiece::respawn_(PieceGrid const& piece_grid) {
 
-    grid_pos_ = sf::Vector2i(5, 2);
-    
-    piece_type_ = piece_queue_[0];
-    piece_queue_[0] = piece_queue_[1];
-    piece_queue_[1] = piece_queue_[2];
-    piece_queue_[2] = get_random_type();
+    grid_pos_ = spawn_pos_;
+
+    rotate_piece_queue_();
 
     rotation_ = 0;
     move_down_tick_ = 0;
@@ -144,6 +173,17 @@ void PlayerPiece::respawn_(PieceGrid const& piece_grid) {
         }
 
     }
+
+    can_swap_hold_ = true;
+
+}
+
+void PlayerPiece::rotate_piece_queue_() {
+
+    piece_type_ = piece_queue_[0];
+    piece_queue_[0] = piece_queue_[1];
+    piece_queue_[1] = piece_queue_[2];
+    piece_queue_[2] = get_random_type();
 
 }
 

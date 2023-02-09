@@ -11,6 +11,7 @@
 
 class PlayerPiece {
 private:
+    static const sf::Vector2i spawn_pos_;
 
     sf::Vector2i grid_pos_, drop_position_;
     PieceType piece_type_;
@@ -18,9 +19,10 @@ private:
     int rotation_, lines_cleared_;
     long score_;
     float move_down_tick_;
-    bool gameover_;
+    bool gameover_, can_swap_hold_;
 
     std::array<PieceType, 3> piece_queue_;
+    PieceType held_piece_type_;
 
 public:
     PlayerPiece(PieceGrid const& piece_grid);
@@ -34,6 +36,8 @@ public:
     void rotate(PieceGrid const& piece_grid, int dir);
 
     void hard_drop(PieceGrid& piece_grid);
+
+    void swap_held_piece();
 
     sf::Vector2i get_grid_pos() const;
 
@@ -51,8 +55,14 @@ public:
 
     std::array<PieceType, 3> get_piece_queue() const;
 
+    PieceType get_held_piece_type() const;
+    
+    bool can_swap_hold() const;
+
 private:
     void respawn_(PieceGrid const& piece_grid);
+
+    void rotate_piece_queue_();
     
     void calculate_drop_position_(PieceGrid const& piece_grid);
 
