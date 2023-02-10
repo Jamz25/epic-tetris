@@ -14,7 +14,7 @@ int main() {
 
     srand((unsigned)time(0));
 
-    sf::RenderWindow window(sf::VideoMode({800, 600}), "Tetris");
+    sf::RenderWindow window(sf::VideoMode({800, 600}), "Epic Tetris");
     window.setFramerateLimit(60);
     sf::Clock clock;
 
@@ -92,6 +92,8 @@ int main() {
         }
 
         player_piece.update(delta_time, piece_grid);
+
+        piece_grid.update(delta_time);
 
         window.clear();
         

@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include <memory>
+#include <cmath>
 
 #include "Piece.hpp"
 #include "PieceMove.hpp"
@@ -29,8 +30,13 @@ private:
 
     std::shared_ptr<SpriteManager> sprite_manager_sptr_;
 
+    static const float max_clear_line_flash_time_;
+    std::array<float, ROWS> cleared_line_flash_times_;
+
 public:
     PieceGrid(sf::Vector2i root_pos, std::shared_ptr<SpriteManager> sprite_manager_sptr);
+
+    void update(float delta_time);
 
     void empty_grid();
 

@@ -1,6 +1,8 @@
 #include "PieceGrid.hpp"
 #include "PlayerPiece.hpp"
 
+const float PieceGrid::max_clear_line_flash_time_ = 0.12;
+
 PieceGrid::PieceGrid(sf::Vector2i root_pos, std::shared_ptr<SpriteManager> sprite_manager_sptr) {
 
     root_pos_ = root_pos;
@@ -11,11 +13,23 @@ PieceGrid::PieceGrid(sf::Vector2i root_pos, std::shared_ptr<SpriteManager> sprit
 
 }
 
+void PieceGrid::update(float delta_time) {
+
+    for (float& flash_time : cleared_line_flash_times_) {
+
+        flash_time = std::max(0.0f, flash_time - delta_time);
+
+    }
+
+}
+
 void PieceGrid::empty_grid() {
 
     for (int i = 0; i < ROWS; i++) {
         grid_.at(i).fill(PieceType::None);
     }
+
+    cleared_line_flash_times_.fill(0);
 
 }
 
@@ -125,6 +139,8 @@ int PieceGrid::sweep_fallen_pieces() {
 
             grid_.at(row).fill(PieceType::None);
 
+            cleared_line_flash_times_.at(row) = max_clear_line_flash_time_;
+
             for (int reverse = row; reverse > 0; reverse--) {
                 grid_.at(reverse) = grid_.at(reverse - 1);
             }
@@ -228,6 +244,25 @@ void PieceGrid::draw_grid_row_(sf::RenderWindow& window, int y) const {
             rect.setOutlineThickness(1);
 
             window.draw(rect);
+
+        }
+
+        if (cleared_line_flash_times_.at(y) > 0) {
+
+            float const& flash_time = cleared_line_flash_times_.at(y);
+
+            float scale = GRID_SIZE  * flash_time / max_clear_line_flash_time_;
+
+            sf::RectangleShape clear_flash(sf::Vector2f(scale, scale));
+
+            sf::Vector2f pos = screen_pos;
+            pos.x += GRID_SIZE / 2;
+            pos.y += GRID_SIZE / 2;
+
+            clear_flash.setPosition(pos);
+            clear_flash.setOrigin(sf::Vector2f(scale / 2, scale / 2));
+
+            window.draw(clear_flash);
 
         }
 
