@@ -29,7 +29,7 @@ void PlayerPiece::reset(PieceGrid const& piece_grid) {
 void PlayerPiece::update(float delta_time, PieceGrid& piece_grid) {
 
     float move_down_tick_max = 1.0f;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Joystick::getAxisPosition(1, sf::Joystick::Axis::PovY) < 0) {
         move_down_tick_max = 0.06f;
     }
 

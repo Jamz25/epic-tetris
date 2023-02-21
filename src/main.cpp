@@ -10,14 +10,22 @@
 #include "UIManager.hpp"
 
 
+void process_events(sf::RenderWindow& window, PlayerPiece& player_piece, PieceGrid& piece_grid);
+
+void process_keyboard_events_(sf::Event& event, PlayerPiece& player_piece, PieceGrid& piece_grid);
+
+void process_joystick_events_(sf::Event& event, PlayerPiece& player_piece, PieceGrid& piece_grid);
+
+
 int main() {
 
+
     srand((unsigned)time(0));
+
 
     sf::RenderWindow window(sf::VideoMode({800, 600}), "Epic Tetris");
     window.setFramerateLimit(60);
     sf::Clock clock;
-
 
 
     sf::Image icon;
@@ -44,45 +52,7 @@ int main() {
 
         float delta_time = clock.restart().asSeconds();
 
-        sf::Event event;
-        while (window.pollEvent(event)) {
-
-            if (event.type == sf::Event::Closed)
-                window.close();
-            
-            if (event.type == sf::Event::KeyPressed) {
-
-                switch (event.key.code) {
-
-                    case (sf::Keyboard::J):
-                        player_piece.rotate(piece_grid, -1);
-                        break;
-                    
-                    case (sf::Keyboard::K):
-                        player_piece.rotate(piece_grid, 1);
-                        break;
-                    
-                    case (sf::Keyboard::A):
-                        player_piece.move_horizontal(piece_grid, PieceMove::Left);
-                        break;
-                    
-                    case (sf::Keyboard::D):
-                        player_piece.move_horizontal(piece_grid, PieceMove::Right);
-                        break;
-                    
-                    case (sf::Keyboard::W):
-                        player_piece.hard_drop(piece_grid);
-                        break;
-                    
-                    case (sf::Keyboard::Q):
-                        player_piece.swap_held_piece();
-                        break;
-
-                }
-
-            }
-
-        }
+        process_events(window, player_piece, piece_grid);
 
         if (player_piece.is_game_over()) {
 
@@ -130,4 +100,102 @@ int main() {
     }
 
     return 0;
+}
+
+
+void process_events(sf::RenderWindow& window, PlayerPiece& player_piece, PieceGrid& piece_grid) {
+
+    sf::Event event;
+    while (window.pollEvent(event)) {
+
+        if (event.type == sf::Event::Closed)
+            window.close();
+        
+        process_keyboard_events_(event, player_piece, piece_grid);
+
+        process_joystick_events_(event, player_piece, piece_grid);
+
+    }
+
+}
+
+
+void process_keyboard_events_(sf::Event& event, PlayerPiece& player_piece, PieceGrid& piece_grid) {
+
+    if (event.type == sf::Event::KeyPressed) {
+
+        switch (event.key.code) {
+
+            case (sf::Keyboard::J):
+                player_piece.rotate(piece_grid, -1);
+                break;
+            
+            case (sf::Keyboard::K):
+                player_piece.rotate(piece_grid, 1);
+                break;
+            
+            case (sf::Keyboard::A):
+                player_piece.move_horizontal(piece_grid, PieceMove::Left);
+                break;
+            
+            case (sf::Keyboard::D):
+                player_piece.move_horizontal(piece_grid, PieceMove::Right);
+                break;
+            
+            case (sf::Keyboard::W):
+                player_piece.hard_drop(piece_grid);
+                break;
+            
+            case (sf::Keyboard::Q):
+                player_piece.swap_held_piece();
+                break;
+
+        }
+
+    }
+
+}
+
+
+void process_joystick_events_(sf::Event& event, PlayerPiece& player_piece, PieceGrid& piece_grid) {
+
+    if (event.type == sf::Event::JoystickButtonPressed) {
+
+        switch (event.joystickButton.button) {
+
+            case (0):
+                player_piece.rotate(piece_grid, -1);
+                break;
+            
+            case (1):
+                player_piece.rotate(piece_grid, 1);
+                break;
+            
+            case (4):
+                player_piece.swap_held_piece();
+                break;
+
+        }
+
+    }
+
+    if (event.type == sf::Event::JoystickMoved) {
+
+        sf::Joystick::Axis axis = event.joystickMove.axis;
+        float position = event.joystickMove.position;
+
+        if (axis == 7 && position > 0) {
+            player_piece.hard_drop(piece_grid);
+        }
+
+        if (axis == 6 && position < 0) {
+            player_piece.move_horizontal(piece_grid, PieceMove::Left);
+        }
+
+        if (axis == 6 && position > 0) {
+            player_piece.move_horizontal(piece_grid, PieceMove::Right);
+        }
+
+    }
+
 }
