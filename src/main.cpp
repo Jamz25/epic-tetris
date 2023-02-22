@@ -14,7 +14,7 @@ void process_events(sf::RenderWindow& window, PlayerPiece& player_piece, PieceGr
 
 void process_keyboard_events_(sf::Event& event, PlayerPiece& player_piece, PieceGrid& piece_grid);
 
-void process_joystick_events_(sf::Event& event, PlayerPiece& player_piece, PieceGrid& piece_grid);
+void process_joystick_events_(sf::RenderWindow& window, sf::Event& event, PlayerPiece& player_piece, PieceGrid& piece_grid);
 
 
 int main() {
@@ -105,15 +105,27 @@ int main() {
 
 void process_events(sf::RenderWindow& window, PlayerPiece& player_piece, PieceGrid& piece_grid) {
 
+    sf::View view = window.getDefaultView();
+
     sf::Event event;
     while (window.pollEvent(event)) {
 
         if (event.type == sf::Event::Closed)
             window.close();
         
+        if (event.type == sf::Event::Resized) {
+            // resize my view
+            view.setSize({
+                    static_cast<float>(event.size.width),
+                    static_cast<float>(event.size.height)
+            });
+            window.setView(view);
+            // and align shape
+        }
+        
         process_keyboard_events_(event, player_piece, piece_grid);
 
-        process_joystick_events_(event, player_piece, piece_grid);
+        process_joystick_events_(window, event, player_piece, piece_grid);
 
     }
 
@@ -157,7 +169,7 @@ void process_keyboard_events_(sf::Event& event, PlayerPiece& player_piece, Piece
 }
 
 
-void process_joystick_events_(sf::Event& event, PlayerPiece& player_piece, PieceGrid& piece_grid) {
+void process_joystick_events_(sf::RenderWindow& window, sf::Event& event, PlayerPiece& player_piece, PieceGrid& piece_grid) {
 
     if (event.type == sf::Event::JoystickButtonPressed) {
 
@@ -173,6 +185,10 @@ void process_joystick_events_(sf::Event& event, PlayerPiece& player_piece, Piece
             
             case (4):
                 player_piece.swap_held_piece();
+                break;
+            
+            case (7):
+                window.close();
                 break;
 
         }
